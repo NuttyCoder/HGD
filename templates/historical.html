@@ -1,0 +1,62 @@
+<!-- templates/historical.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Historical Sensor Data</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Historical Sensor Data</h1>
+  <canvas id="tempChart" width="800" height="400"></canvas>
+  <script>
+    fetch('/api/history')
+      .then(response => response.json())
+      .then(data => {
+        // Reverse data so the oldest record is first
+        data.reverse();
+        const timestamps = data.map(rec => rec.timestamp);
+        const temperatures = data.map(rec => rec.temperature);
+        const ctx = document.getElementById('tempChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: timestamps,
+            datasets: [{
+              label: 'Temperature (°C)',
+              data: temperatures,
+              borderColor: 'rgba(255, 99, 132, 1)',
+              backgroundColor: 'rgba(255, 99, 132, 0.2)',
+              fill: false,
+              tension: 0.1
+            }]
+          },
+          options: {
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: 'Timestamp'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: 'Temperature (°C)'
+                }
+              }
+            },
+            plugins: {
+              title: {
+                display: true,
+                text: 'Temperature Over Time'
+              }
+            }
+          }
+        });
+      })
+      .catch(error => console.error("Error loading historical data:", error));
+  </script>
+  <p><a href="/">Back to Live Dashboard</a></p>
+</body>
+</html>
