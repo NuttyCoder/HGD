@@ -1,0 +1,34 @@
+<!-- templates/dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Sensor Dashboard</title>
+  <script>
+    function fetchData() {
+      fetch('/api/data')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('temp').innerText = data.temperature || "N/A";
+          document.getElementById('ph').innerText = data.pH || "N/A";
+          document.getElementById('ec').innerText = data.EC || "N/A";
+          document.getElementById('water').innerText = data.water_level || "N/A";
+          document.getElementById('status').innerText = (data.status === 0 || data.status === undefined) ? "OK" : "ERROR";
+        })
+        .catch(error => console.error('Error fetching sensor data:', error));
+    }
+    // Poll every 2 seconds
+    setInterval(fetchData, 2000);
+    window.onload = fetchData;
+  </script>
+</head>
+<body>
+  <h1>Live Sensor Dashboard</h1>
+  <p>Temperature: <span id="temp">N/A</span> °C</p>
+  <p>pH: <span id="ph">N/A</span></p>
+  <p>EC: <span id="ec">N/A</span></p>
+  <p>Water Level: <span id="water">N/A</span>%</p>
+  <p>Status: <span id="status">N/A</span></p>
+  <p><a href="/historical">See Historical Data</a></p>
+</body>
+</html>
